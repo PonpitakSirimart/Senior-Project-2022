@@ -10,7 +10,7 @@ import base64
 import pytesseract
 import random
 import string
-# new import dependency
+
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
