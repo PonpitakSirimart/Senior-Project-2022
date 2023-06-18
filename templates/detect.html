@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect Text In Camera</title>
+
+    <!-- fav-icon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='/images/newlogo.png') }}" type="image/x-icon">
+    <!-- style.css -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- boostrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+</head>
+
+
+<body>
+    <nav class="navbar fixed-top mb-5">
+        <div class="container-fluid mx-2">
+            <a href="/homepage" class="navbar-brand">
+                <i class="fa-solid fa-angle-left"></i>
+            </a>
+            <div class="d-flex menu_bar">
+                <i class="fa-solid fa-bars" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"></i>
+
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                    <div class="offcanvas-header">
+                        <h5 id="offcanvasRightLabel">เมนู</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <a href="/detect" class="">
+                            <p><i class="fa-solid fa-camera"></i> สแกนข้อความผ่านกล้อง </p>
+                        </a>
+                        <a href="/pdf_convert" class="">
+                            <p><i class="fa-solid fa-file-pdf"></i> แปลงไฟล์ PDF เป็นข้อความ</p>
+                        </a>
+                        <a href="/library" class="">
+                            <p><i class="fa-solid fa-book"></i> ห้องสมุดของคุณ</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container pt-5">
+        <div class="row mt-5 text-center">
+            <div class="col-12 col-lg-6 mx-auto">
+                <h1 class="start_text pt-3">สแกนข้อความ</h1>
+                <p class="text-secondary pt-3">สแกนข้อความจากในกล้องของผู้ใช้งาน เพื่อค้นหาข้อความที่จะนำมาอ่านให้ผู้ใช้งานฟัง</p>
+                <button class="btn_start w-100">เริ่มต้นการสแกนข้อความ</button>
+                <div class="show_detect">
+                    <h5 id="result" class="w-100 py-5 fw-bold">เริ่มต้นการตรวจจับข้อความจากกล้องของคุณ</h5>
+                    <video id="video" playsinline autoplay muted class="w-100 video_detect"></video>
+
+                    <canvas id="canvas" class="w-100 d-none"></canvas>
+                    <audio id="audio" class="w-100 mt-4" controls autoplay></audio>
+                    <!-- <div class="audio-player">
+                        <audio id="audio" class="w-100 mt-4" controls autoplay></audio>
+                        <div class="audio-controls">
+                          <button class="audio-repeat">Repeat</button>
+                          <button class="audio-play">Play</button>
+                          <div class="audio-volume">
+                            <input type="range" class="audio-volume-slider" min="0" max="1" step="0.1" value="1">
+                          </div>
+                        </div>
+                    </div> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="d-flex justify-content-between align-items-center px-3">
+        <a class="navbar-brand">
+            <img src="{{ url_for('static', filename='images/newlogo.png') }}" alt="">
+        </a>
+        <p class="text_foot">© 2022 SNP65 , All Rights Reserved</p>
+    </footer>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script>
+    // //dropdown show list
+    // const dropdownButton = document.querySelector('#dropdown_speech');
+    // const dropdownItems = document.querySelectorAll('.dropdown-item');
+    // dropdownItems.forEach(item => {
+    //     $(item).click(function(e) {
+    //         e.preventDefault();
+    //         dropdownButton.textContent = item.textContent;
+    //     });
+
+    // });
+
+    $(".show_detect").css("display", "none");
+    let intervalID;
+
+    $(".btn_start").click(function(e) {
+        e.preventDefault();
+        $(".btn_start").hide();
+        $(".show_detect").css("display", "block");
+
+        //open video to detect text in camera
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: {
+                    ideal: 'environment'
+                }
+            }
+        })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(error => {
+            if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: {
+                            ideal: 'user'
+                        }
+                    }
+                })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(error => console.error('Could not access camera:', error));
+            } else {
+                console.error('Could not access camera:', error);
+            }
+        });
+
+        intervalID = setInterval(detectText, 5000);
+
+        function detectText() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL("image/png");
+        
+            fetch("/detect-text", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        imageData: imageData,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status !== "success") {
+                        clearInterval(intervalID);
+                        handleFailure();
+                    } else {
+                        clearInterval(intervalID);
+                        handleSuccess(data.text);
+                    }
+                })
+                .catch((error) => {
+                    clearInterval(intervalID);
+                    console.error("Could not detect text:", error);
+                });
+        }
+
+        function handleFailure() {
+            Swal.fire({
+                position: "top",
+                icon: "error",
+                title: "ไม่สามารถค้นหาข้อความได้",
+                text: "กรุณาลองอีกครั้งใน 5 วินาที",
+                timer: 5000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                willClose: () => {
+                    intervalID = setInterval(detectText, 5000);
+                },
+            });
+        }
+
+        function handleSuccess(text) {
+            Swal.fire({
+                icon: "success",
+                title: "ข้อความของคุณคือ",
+                text: text,
+                showConfirmButton: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    playAudio(text);
+                    // localStorage.setItem("text", text)
+                }
+            });
+        }
+    });
+
+    function playAudio(text) {
+
+        let newText = localStorage.getItem("text")
+            // setup api parameter
+        let urlAPI = 'https://api.aiforthai.in.th/vaja9/synth_audiovisual';
+        var setting_API = {
+            url: urlAPI,
+            method: "POST",
+            headers: {
+                "Apikey": "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
+                "Content-Type": "application/json",
+            },
+            data: JSON.stringify({
+                input_text: text,
+                speaker: 0,
+                phrase_break: 0,
+                audiovisual: 0,
+            })
+        };
+
+        async function play_wav(wav) {
+            $(".btn_listen").hide()
+            const audioSource = document.getElementById("audio");
+            const result = await fetch(wav, {
+                headers: {
+                    Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
+                },
+            });
+
+            const blob = await result.blob();
+            if (blob) {
+                audioSource.src = URL.createObjectURL(blob);
+                audioSource.onended = onFinished;
+                audioSource.play();
+            }
+        }
+
+        // Make an API call to generate the audio file
+        $.ajax(setting_API).done(function(response) {
+            // check status
+            console.log(response);
+            if (response.msg == "success") {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'เสียงของคุณพร้อมแล้ว!',
+                    text: 'คลิกเพื่อฟัง',
+                    confirmButtonText: 'เล่นเสียง',
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        clearInterval(intervalID)
+                        play_wav(response.wav_url);
+                    }
+                });
+            } else {
+                Swal.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่สามารถสร้างเสียงได้',
+                    text: 'กรุณาลองอีกครั้งในภายหลัง',
+                    allowOutsideClick: false,
+                });
+                localStorage.removeItem("text")
+            }
+        }).fail(function(jqXHR, textStatus) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'ไม่สามารถเชื่อมต่อ API ได้',
+                text: 'กรุณาลองใหม่ในภายหลัง',
+                confirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+
+            setTimeout(function() {
+                window.location.href = '/detect';
+            }, 3000);
+        });
+
+        let isButtonAppended = false;
+
+        function onFinished() {
+            const btnListen = document.createElement("button");
+            let audioSRC = document.getElementById('audio')
+            btnListen.className = "btn_listen w-100 mt-3";
+            btnListen.textContent = "เสร็จสิ้นการฟังเสียง";
+            const showDetect = document.querySelector(".show_detect");
+            if (!isButtonAppended) {
+                showDetect.appendChild(btnListen);
+                isButtonAppended = true;
+            } else {
+                $(".btn_listen").show();
+            }
+            btnListen.addEventListener("click", function() {
+                audioSRC.src = ""
+                $(".btn_listen").hide();
+                isButtonAppended = false;
+                window.location.reload();
+            });
+        }
+
+    }
+</script>
+<!-- <script>
+    const audio = document.getElementById('audio');
+    const audioRepeatBtn = document.querySelector('.audio-repeat');
+    const audioPlayBtn = document.querySelector('.audio-play');
+    const audioVolumeSlider = document.querySelector('.audio-volume-slider');
+
+    audioRepeatBtn.addEventListener('click', () => {
+        audio.play();
+    });
+
+    audioPlayBtn.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.play();
+            audioPlayBtn.textContent = 'Pause';
+        } else {
+            audio.pause();
+            audioPlayBtn.textContent = 'Play';
+        }
+    });
+
+    audio.addEventListener('ended', () => {
+        audioPlayBtn.textContent = 'Play';
+    });
+
+    audioVolumeSlider.addEventListener('input', () => {
+        audio.volume = audioVolumeSlider.value;
+    });
+</script> -->
+</html>
