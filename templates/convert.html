@@ -180,63 +180,32 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script>
-    $(document).ready(function () {
-      var text_pdf = document.getElementById("text").textContent;
-      let textToJSON = JSON.stringify(text_pdf);
+<script>
+  $(document).ready(function () {
+    var text_pdf = document.getElementById("text").textContent;
+    let textToJSON = JSON.stringify(text_pdf);
 
-      async function play_wav(wav) {
-        const audioSource = document.getElementById("audio");
-        const result = await fetch(wav, {
-          headers: {
-            Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy ",
-          },
-        });
+    async function play_wav(wav) {
+      const audioSource = document.getElementById("audio");
+      const result = await fetch(wav, {
+        headers: {
+          Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy ",
+        },
+      });
 
-        const blob = await result.blob();
-        if (blob) {
-          audioSource.src = URL.createObjectURL(blob);
-        }
+      const blob = await result.blob();
+      if (blob) {
+        audioSource.src = URL.createObjectURL(blob);
       }
-
-      function sendAjaxRequest(speaker) {
-        var settings = {
-          url: "https://api.aiforthai.in.th/vaja9/synth_audiovisual ",
-          method: "POST ",
-          headers: {
-            Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy ",
-            "Content-Type ": "application/json ",
-          },
-          data: JSON.stringify({
-            input_text: textToJSON,
-            speaker: speaker,
-            phrase_break: 0,
-            audiovisual: 0,
-          }),
-        };
-
-        $.ajax(settings).done(function (response) {
-          play_wav(response.wav_url);
-        });
-      }
-      sendAjaxRequest(0);
-    });
-
-    function setSpeaker(speaker) {
-      console.log(speaker);
-      sendAjaxRequest(speaker);
     }
 
     function sendAjaxRequest(speaker) {
-      var text_pdf = document.getElementById("text").textContent;
-      let textToJSON = JSON.stringify(text_pdf);
-
       var settings = {
-        url: "https://api.aiforthai.in.th/vaja9/synth_audiovisual",
-        method: "POST",
+        url: "https://api.aiforthai.in.th/vaja9/synth_audiovisual ",
+        method: "POST ",
         headers: {
-          Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
-          "Content-Type": "application/json",
+          Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy ",
+          "Content-Type ": "application/json ",
         },
         data: JSON.stringify({
           input_text: textToJSON,
@@ -250,59 +219,89 @@
         play_wav(response.wav_url);
       });
     }
+    sendAjaxRequest(0);
+  });
 
-    async function play_wav(wav) {
-      const audioSource = document.getElementById("audio");
-      const result = await fetch(wav, {
-        headers: {
-          Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
-        },
-      });
+  function setSpeaker(speaker) {
+    console.log(speaker);
+    sendAjaxRequest(speaker);
+  }
 
-      const blob = await result.blob();
-      if (blob) {
-        audioSource.src = URL.createObjectURL(blob);
-      }
+  function sendAjaxRequest(speaker) {
+    var text_pdf = document.getElementById("text").textContent;
+    let textToJSON = JSON.stringify(text_pdf);
+
+    var settings = {
+      url: "https://api.aiforthai.in.th/vaja9/synth_audiovisual",
+      method: "POST",
+      headers: {
+        Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        input_text: textToJSON,
+        speaker: speaker,
+        phrase_break: 0,
+        audiovisual: 0,
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+      play_wav(response.wav_url);
+    });
+  }
+
+  async function play_wav(wav) {
+    const audioSource = document.getElementById("audio");
+    const result = await fetch(wav, {
+      headers: {
+        Apikey: "letBGyiaspJ9ERccDfEB5R4vKeCMKfQy",
+      },
+    });
+
+    const blob = await result.blob();
+    if (blob) {
+      audioSource.src = URL.createObjectURL(blob);
     }
+  }
 
-    $(".btn_voice, .btn_voice_secound").click(function () {
-      $(".btn_voice, .btn_voice_secound").removeClass("btn_active");
-      $(this).addClass("btn_active");
-    });
-  </script>
-  <script>
-    const fileName = "{{ info[1] }}";
-    const fileUrl = `/uploads/${fileName}`;
-    const linkHtml = `<strong>ชื่อไฟล์งาน: <a href="${fileUrl}" target="_blank" id="path_file"> {{ info[1] }}</a></strong>`;
-    document.getElementById("show_file").innerHTML = linkHtml;
+  $(".btn_voice, .btn_voice_secound").click(function () {
+    $(".btn_voice, .btn_voice_secound").removeClass("btn_active");
+    $(this).addClass("btn_active");
+  });
 
-    //dropdown show list
-    const dropdownButton = document.querySelector("#dropdown_speech");
-    const dropdownItems = document.querySelectorAll(".dropdown-item");
-    dropdownItems.forEach((item) => {
-      $(item).click(function (e) {
-        e.preventDefault();
-        dropdownButton.textContent = item.textContent;
-      });
-    });
+  const fileName = "{{ info[1] }}";
+  const fileUrl = `/uploads/${fileName}`;
+  const linkHtml = `<strong>ชื่อไฟล์งาน: <a href="${fileUrl}" target="_blank" id="path_file"> {{ info[1] }}</a></strong>`;
+  document.getElementById("show_file").innerHTML = linkHtml;
 
-    const btn_save = document.getElementById("btn_save");
-    $(btn_save).click(function (e) {
+  //dropdown show list
+  const dropdownButton = document.querySelector("#dropdown_speech");
+  const dropdownItems = document.querySelectorAll(".dropdown-item");
+  dropdownItems.forEach((item) => {
+    $(item).click(function (e) {
       e.preventDefault();
-      const filePath = document.getElementById("show_file").textContent;
-      const text = document.getElementById("text").textContent;
-      let file_path = filePath.replace("ชื่อไฟล์งาน: ", "");
-      localStorage.setItem("text", text);
-      localStorage.setItem("filePath", file_path);
-      window.location.href = "/pdf_data";
+      dropdownButton.textContent = item.textContent;
     });
+  });
 
-    const back_home = document.getElementById("btn_back");
-    $(back_home).click(function (e) {
-      e.preventDefault();
-      localStorage.removeItem("text");
-      localStorage.removeItem("filePath");
-      window.location.href = "/pdf_convert";
-    });
-  </script>
+  const btn_save = document.getElementById("btn_save");
+  $(btn_save).click(function (e) {
+    e.preventDefault();
+    const filePath = document.getElementById("show_file").textContent;
+    const text = document.getElementById("text").textContent;
+    let file_path = filePath.replace("ชื่อไฟล์งาน: ", "");
+    localStorage.setItem("text", text);
+    localStorage.setItem("filePath", file_path);
+    window.location.href = "/pdf_data";
+  });
+
+  const back_home = document.getElementById("btn_back");
+  $(back_home).click(function (e) {
+    e.preventDefault();
+    localStorage.removeItem("text");
+    localStorage.removeItem("filePath");
+    window.location.href = "/pdf_convert";
+  });
+</script>
 </html>
