@@ -80,28 +80,17 @@ def convert():
     uploaded_file = request.files['pdf_file']
 
     if uploaded_file.filename != '':
-        # get datetime function
         now = datetime.now()
-        # setting date format (Date)
-            # current_time = now.strftime("%Y%m%d")
-        # setting date format (Date,Time)
         current_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-
-        # filename = os.path.basename(filename)
         filename = current_time + '-' + secure_filename(uploaded_file.filename)
-
         path_file = os.path.join(os.getcwd(), 'uploads', filename)
-
         uploaded_file.save(path_file)
-
         text = extract_text(path_file)
-
         data = [
             text,
             filename,
         ]
         return render_template('convert.html', info=data)
-
     return render_template('pdf-convert.html')
 
 # function for extract text from pdf file
